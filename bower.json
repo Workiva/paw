@@ -1,0 +1,26 @@
+{
+  "name": "paw",
+  "version": "0.7.0",
+  "private": true,
+  "ignore": [
+    "bower_components/",
+    "node_modules/",
+    "test/",
+    "tools/",
+    "Gruntfile.js",
+    "index.html",
+    "init.sh",
+    "package.json",
+    "smithy.yaml"
+  ],
+  "dependencies": {
+    "q": "0.9.7"
+  },
+  "devDependencies": {
+    "angular": "~1.2.13",
+    "angular-hotkeys": "chieffancypants/angular-hotkeys#~1.3.0",
+    "bootstrap": "~3.1.1",
+    "hammerjs": "1.0.5",
+    "mousetrap": "~1.4.6"
+  }
+}
