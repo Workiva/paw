@@ -6,9 +6,11 @@ COLOR_GREEN="\x1b[32m"
 COLOR_RESET="\x1b[0m"
 
 # prepare the dev environment
-git clean -fxd && \
-npm install && \
+git clean -fxd
+npm install
 bower install
+jspm install
+tsd reinstall
 
 if [ $? -ne 0 ]; then
   echo "$COLOR_RED"
@@ -21,9 +23,10 @@ echo "\nGO FORTH AND CONQUER\n"
 
 echo "At any time you may:"
 echo "--------------------"
-echo "grunt -h    # show available tasks."
-echo "grunt qa    # Check code quality and open the project web site."
-echo "grunt dev   # lint and test, open the project web site and watch."
+echo "gulp help         # show available tasks"
+echo "gulp              # build, test, and generate docs"
+echo "gulp serve        # open the project web site"
+echo "gulp watch:test   # build, test, and watch"
 echo ""
 
 echo "$COLOR_RESET"

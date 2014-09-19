@@ -1,7 +1,7 @@
 {
   "name": "paw",
   "version": "0.7.0",
-  "description": "Simulated touches and gestures for automated testing",
+  "description": "Touch and gesture emulation",
   "repository": {
     "type": "git",
     "url": "git://github.com/Workiva/paw.git"
@@ -16,6 +16,7 @@
   },
   "readmeFilename": "README.md",
   "devDependencies": {
+    "wGulp": "git+ssh://git@github.com:WebFilings/wGulp.git#master",
     "grunt": "~0.4.1",
     "wf-grunt": "git+ssh://git@github.com:WebFilings/wf-grunt.git#0.4.0"
   },

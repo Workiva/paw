@@ -15,19 +15,13 @@
  */
 
 /* global module, DocumentTouch, NodeList */
-(function(root, factory) {
-    if (typeof exports === 'object') {
-        module.exports = factory(require('paw/Train'), require('paw/Gestures'), require('paw/ViewportRelative'));
-    }
-    else if (typeof define === 'function' && define.amd) {
-        define('paw/Paw', ['paw/Train', 'paw/Gestures', 'paw/ViewportRelative'], factory);
-    }
-    else {
-        root.Paw = factory(root.Train, root.Gestures, root.ViewportRelative);
-    }
-}(this, function(Train, Gestures, ViewportRelative) {
+(function () {
 
     'use strict';
+
+    var Train = require('Train');
+    var Gestures = require('Gestures');
+    var ViewportRelative = require('ViewportRelative');
 
     var POINT_REGEX = /^\s*(top|left|right|center|bottom|\d+\.?\d*(px|%))\s+(top|left|right|center|bottom|\d+\.?\d*(px|%))\s*$/i;
 
@@ -98,7 +92,7 @@
         ];
 
         // Default duration
-        this.DEFAULT_DURATION = 300;
+        this.DEFAULT_DURATION = 500;
 
         // Default double tap duration
         this.DEFAULT_DOUBLE_TAP_DURATION = 120;
@@ -500,5 +494,5 @@
         };
     };
 
-    return Paw;
-}));
+    module.exports = Paw;
+}());

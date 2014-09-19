@@ -15,18 +15,11 @@
  */
 
 /* global module */
-(function(root, factory) {
-    if (typeof exports === 'object') {
-        module.exports = factory(require('paw/WheelEventSimulator'));
-    }
-    else if (typeof define === 'function' && define.amd) {
-        define('paw/Gestures', ['paw/WheelEventSimulator'], factory);
-    }
-    else {
-        root.Gestures = factory(root.WheelEventSimulator);
-    }
-}(this, function(WheelEventSimulator) {
+(function () {
 
+    'use strict';
+
+    var WheelEventSimulator = require('WheelEventSimulator');
     /**
      * This provides functionality for Paw and not meant to be used separately
      *
@@ -254,6 +247,7 @@
          * @param {Number} [msToHold] How lond to hold the touch
          */
         hold: function(where, msToHold, done) {
+            // fubar
             msToHold = Number(msToHold) || this.getDefaultDuration();
             this.touch(where).wait(msToHold).release().then(done);
         },
@@ -368,5 +362,6 @@
         }
     };
 
-    return Gestures;
-}));
+    module.exports = Gestures;
+
+}());

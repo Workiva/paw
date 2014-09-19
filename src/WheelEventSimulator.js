@@ -15,17 +15,9 @@
  */
 
 /* global module */
-(function(root, factory) {
-    if (typeof exports === 'object') {
-        module.exports = factory();
-    }
-    else if (typeof define === 'function' && define.amd) {
-        define('paw/WheelEventSimulator', [], factory);
-    }
-    else {
-        root.WheelEventSimulator = factory();
-    }
-}(this, function() {
+(function () {
+
+    'use strict';
 
     /**
      * WheelEventSimulator is designed for use in modern browsers (FF6+, IE9+).
@@ -150,5 +142,6 @@
         }
     };
 
-    return WheelEventSimulator;
-}));
+    module.exports = WheelEventSimulator;
+
+}());

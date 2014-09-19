@@ -15,17 +15,7 @@
  */
 
 /* global module */
-(function(root, factory) {
-    if (typeof exports === 'object') {
-        module.exports = factory();
-    }
-    else if (typeof define === 'function' && define.amd) {
-        define('paw/ViewportRelative', [], factory);
-    }
-    else {
-        root.ViewportRelative = factory();
-    }
-}(this, function() {
+(function () {
 
     'use strict';
 
@@ -223,7 +213,7 @@
     }
 
     // export an object with the public functions on it
-    return {
+    module.exports = {
         normalizePoint: normalizePoint,
         isOrderReversed: isOrderReversed,
         valueToPixels: valueToPixels,
@@ -232,4 +222,4 @@
         pointToString: pointToString
     };
 
-}));
+}());
