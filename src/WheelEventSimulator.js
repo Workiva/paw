@@ -23,23 +23,24 @@
  *
  * https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent#Browser_compatibility
  */
-(function polyfillCustomEventConstructor() {
+
+function CustomEventPolyfill(event, params) {
+     params = params || { bubbles: false, cancelable: false, detail: undefined };
+     var evt = document.createEvent('CustomEvent');
+     evt.initCustomEvent(event, params.bubbles, params.cancelable, params.detail);
+     return evt;
+}
+
+function polyfillCustomEventConstructor() {
     try {
         return new CustomEvent('?');
     }
     catch (error) {
-        function CustomEventPolyfill(event, params) {
-            params = params || { bubbles: false, cancelable: false, detail: undefined };
-            var evt = document.createEvent('CustomEvent');
-            evt.initCustomEvent(event, params.bubbles, params.cancelable, params.detail);
-            return evt;
-        }
-
         CustomEventPolyfill.prototype = window.Event.prototype;
-
         window.CustomEvent = CustomEventPolyfill;
     }
-}());
+};
+polyfillCustomEventConstructor();
 
 var defaultDependencies = {
     window: window
