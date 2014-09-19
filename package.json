@@ -27,5 +27,14 @@
     "moment": "^2.6.0",
     "open": "0.0.5",
     "raw-body": "^1.1.6"
+  },
+  "jspm": {
+    "name": "paw",
+    "dependencies": {
+      "q": "npm:q@^2.0.2"
+    },
+    "directories": {
+      "lib":"src"
+    }
   }
 }
