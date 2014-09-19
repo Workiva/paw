@@ -17,6 +17,7 @@
 Array.isArray = null;
 
 define(function(require) {
+
     'use strict';
 
     var Paw = require('paw/Paw');

@@ -15,21 +15,12 @@
  */
 
 /* global module */
-(function(root, factory) {
-    if (typeof exports === 'object') {
-        module.exports = factory(require('Q'));
-    }
-    else if (typeof define === 'function' && define.amd) {
-        define('paw/Train', ['Q'], factory);
-    }
-    else {
-        root.Train = factory(root.Q);
-    }
-}(this, function(Q) {
+(function () {
 
     'use strict';
-    var Train = {};
 
+    var Q = require('Q');
+    var Train = {};
 
     // borrowed from angular injector that looks at parameter names
     var FN_ARGS = /^function\s*[^\(]*\(\s*([^\)]*)\)/m;
@@ -238,5 +229,6 @@
         return result;
     };
 
-    return Train;
-}));
+    module.exports = Train;
+
+}());
