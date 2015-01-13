@@ -27,5 +27,10 @@
     "moment": "^2.6.0",
     "open": "0.0.5",
     "raw-body": "^1.1.6"
+  },
+  "jspm": {
+    "directories": {
+      "lib": "src"
+    }
   }
 }
