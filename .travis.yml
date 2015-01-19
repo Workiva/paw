@@ -12,5 +12,5 @@ script:
 # Encrypted SAUCE_USERNAME and SAUCE_ACCESS_KEY
 env:
   global:
-    - secure: Dx/Qyqu1kF56Z1Z4HI58O8iNZDt20cyyIMbmhYqIttDRpABi/KdwcmbitncRcHrwnmyEeDpaQgbtMgBXf/kNY/GWyd7+/SUbVsWDKNTDxFE7LDHPbAi+0cKsbdR1kseIepbfsVTRShei3+LqdaV1dI/gp56kubRBnIfTkGysMdw=
-    - secure: Vk+C0wnQmdYJgPiUw8IclfwfRE61tSn1OXSpZOxaxuaUpj51IovOuAGGg7dlPHJObKieXFDmd5qQ+y7JyAfTuv4ALEwyvXy2EkCUSMo8Nd4QvB0oW8D898vJllu5STCIBE8+58VQAm7bUq3WQ46fNaiGEY6fpgOfPSPWwjB1RZc=
+  - secure: jARZrMETm0//W5ysWpc8kiue/5NZlG1OWh30FoT34bTPqxQYPNOMcc7wIUe6dNSFZNsoaXBgfIAEoGcaw2yhNic8eBuTVRbKBPWrXuXHLp0b67zAj+UjpAuKv7wFSnbjse/i+rrUow17Hz9cU6qiAwWfvEXJoYYAg6+1srvbnFQ=
+  - secure: XG0F3ueV5Iolv60gUEJMqzPqBgyNpmo00DQ8HGpF7JxJp7ARkDvzpuY3Q7P00bATwVbV5S/MC/77rqvUVsLbN0Z3cpAt6SyS90fk+FoYkOkFWG498zDltSnaCsWnVe3J1v/d8Q2AE/mu1vCHTXVBpWlGLahy+yKK9f1mPlFM6Ss=
