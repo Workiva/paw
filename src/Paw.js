@@ -15,7 +15,6 @@
  */
 
 /* global module, DocumentTouch, NodeList */
-'use strict';
 
 var Train = require('./Train');
 var Gestures = require('./Gestures');

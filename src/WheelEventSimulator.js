@@ -15,7 +15,6 @@
  */
 
 /* global module */
-'use strict';
 
 /**
  * WheelEventSimulator is designed for use in modern browsers (FF6+, IE9+).
@@ -39,7 +38,7 @@ function polyfillCustomEventConstructor() {
         CustomEventPolyfill.prototype = window.Event.prototype;
         window.CustomEvent = CustomEventPolyfill;
     }
-};
+}
 polyfillCustomEventConstructor();
 
 var defaultDependencies = {

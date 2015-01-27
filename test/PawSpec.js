@@ -231,65 +231,43 @@ define(function(require) {
             expect(paw.getDefaultDoubleTapDuration()).toBe(155);
         });
 
-        it('should swipe over a duration of 500ms', function() {
-            var ran = false;
+        it('should swipe over a duration of 500ms', function(done) {
             var DURATION = 500;
-            var startTime, duration;
-
-            runs(function() {
-                startTime = new Date();
-                paw
-                    .touch('bottom right')
-                    .drag('center center', DURATION)
-                    .then(function() {
-                        var endTime = new Date();
-                        duration = endTime - startTime;
-                        ran = true;
-                    });
-            });
-            waitsFor(function() {
-                return ran;
-            }, 'should swipe over a duration of 500ms (timeout)', 800);
-            runs(function() {
-                expect(duration).toBeGreaterThan(499);
-                expect(paw.touches.length).toBe(1);
-                expect(paw.touches[0].x).toBe(dims.width / 2);
-                expect(paw.touches[0].y).toBe(dims.height / 2);
-            });
+            var startTime = new Date();
+            paw
+                .touch('bottom right')
+                .drag('center center', DURATION)
+                .then(function() {
+                    var endTime = new Date();
+                    var duration = endTime - startTime;
+                    expect(duration).toBeGreaterThan(499);
+                    expect(paw.touches.length).toBe(1);
+                    expect(paw.touches[0].x).toBe(dims.width / 2);
+                    expect(paw.touches[0].y).toBe(dims.height / 2);
+                    done();
+                });
         });
 
-        it('should swipe correctly with 0 duration', function() {
-            var ran = false;
-            runs(function() {
-                paw.touch('bottom right').drag('center center', 0).then(function() {
-                    ran = true;
+        it('should swipe correctly with 0 duration', function(done) {
+            paw
+                .touch('bottom right')
+                .drag('center center', 0)
+                .then(function() {
+                    expect(paw.touches.length).toBe(1);
+                    expect(paw.touches[0].x).toBe(dims.width / 2);
+                    expect(paw.touches[0].y).toBe(dims.height / 2);
+                    done();
                 });
-            });
-            waitsFor(function() {
-                return ran;
-            }, 'should not take longer than 100ms', 100);
-            runs(function() {
-                expect(paw.touches.length).toBe(1);
-                expect(paw.touches[0].x).toBe(dims.width / 2);
-                expect(paw.touches[0].y).toBe(dims.height / 2);
-            });
         });
 
-        it('should swipe correctly with defaults', function() {
-            var ran = false;
-            runs(function() {
-                paw.swipeUp().then(function() {
-                    ran = true;
+        it('should swipe correctly with defaults', function(done) {
+            paw
+                .swipeUp()
+                .then(function() {
+                    //detault behavior is to release, so we expect 0 touches.
+                    expect(paw.touches.length).toBe(0);
+                    done();
                 });
-            });
-            waitsFor(function() {
-                return ran;
-                //default duration is 300, so it shouldn't take more than 500ms.
-            }, 'should not take longer than 500ms', 500);
-            runs(function() {
-                //detault behavior is to release, so we expect 0 touches.
-                expect(paw.touches.length).toBe(0);
-            });
         });
 
         it('should remove touches', function() {
@@ -354,37 +332,27 @@ define(function(require) {
             }]);
         });
 
-        it('should wait', function() {
+        it('should wait', function(done) {
             var start = Date.now();
-            var yep = false;
-            runs(function() {
-                paw.wait(300).then(function() {
-                    yep = true;
+            paw
+                .wait(300)
+                .then(function() {
                     var waitTime = Date.now() - start;
                     expect(waitTime).toBeGreaterThan(299);
                     expect(waitTime).toBeLessThan(350);
+                    done();
                 });
-            });
-            waitsFor(function() {
-                return yep;
-            });
         });
 
-        it('should wait for a default duration of 300ms', function() {
+        it('should wait for a default duration of 300ms', function(done) {
             var start = Date.now();
-            var ran = false;
-            runs(function() {
-                paw.wait().then(function() {
-                    ran = true;
+            paw
+                .wait()
+                .then(function() {
+                    var waitTime = Date.now() - start;
+                    expect(waitTime).toBeGreaterThan(299);
+                    done();
                 });
-            });
-            waitsFor(function() {
-                return ran;
-            }, 'should not wait more than 350ms', 350);
-            runs(function() {
-                var waitTime = Date.now() - start;
-                expect(waitTime).toBeGreaterThan(299);
-            });
         });
 
 
@@ -443,397 +411,276 @@ define(function(require) {
             }).toThrow();
         });
 
-        it('should dispatch mousedown, mouseup, and click when click() is invoked', function() {
-            var ran = false;
-            runs(function() {
-                paw.click().then(function() {
-                    ran = true;
+        it('should dispatch mousedown, mouseup, and click when click() is invoked', function(done) {
+            paw
+                .click()
+                .then(function() {
+                    expect(getDispatchedEventTypes()).toEqual([
+                        'mousedown',
+                        'mouseup',
+                        'click'
+                    ]);
+                    done();
                 });
-            });
-            waitsFor(function() {
-                return ran;
-            });
-
-            runs(function() {
-                expect(getDispatchedEventTypes()).toEqual([
-                    'mousedown',
-                    'mouseup',
-                    'click'
-                ]);
-
-            });
         });
 
-        it('should click in a default location when tap() is invoked and touch is not supported', function() {
-            var ran = false;
-            runs(function() {
-                paw.isTouchSupported = false;
-                paw.tap().then(function() {
-                    ran = true;
+        it('should click in a default location when tap() is invoked and touch is not supported', function(done) {
+            paw.isTouchSupported = false;
+            paw
+                .tap()
+                .then(function() {
+                    expect(getDispatchedEventTypes()).toEqual([
+                        'mousedown',
+                        'mouseup',
+                        'click'
+                    ]);
+                    done();
                 });
-            });
-
-            waitsFor(function() {
-                return ran;
-            });
-
-            runs(function() {
-                expect(getDispatchedEventTypes()).toEqual([
-                    'mousedown',
-                    'mouseup',
-                    'click'
-                ]);
-            });
         });
 
-        it('should dispatch mousedown, mouseup, click, when tap() is invoked and touch is not supported', function() {
-            var ran = false;
-            runs(function() {
-                paw.isTouchSupported = false;
-                paw.tap('center center').then(function() {
-                    ran = true;
+        it('should dispatch mousedown, mouseup, click, when tap() is invoked and touch is not supported', function(done) {
+            paw.isTouchSupported = false;
+            paw
+                .tap('center center')
+                .then(function() {
+                    expect(getDispatchedEventTypes()).toEqual([
+                        'mousedown',
+                        'mouseup',
+                        'click'
+                    ]);
+                    done();
                 });
-            });
-
-            waitsFor(function() {
-                return ran;
-            });
-
-            runs(function() {
-                expect(getDispatchedEventTypes()).toEqual([
-                    'mousedown',
-                    'mouseup',
-                    'click'
-                ]);
-            });
         });
 
-        it('should dispatch touchstart, touchend when tap() is invoked and touch is supported', function() {
-            var ran = false;
-            runs(function() {
-                paw.isTouchSupported = true;
-                paw.tap('center center').then(function() {
-                    ran = true;
+        it('should dispatch touchstart, touchend when tap() is invoked and touch is supported', function(done) {
+            paw.isTouchSupported = true;
+            paw
+                .tap('center center')
+                .then(function() {
+                    expect(getDispatchedEventTypes()).toEqual([
+                        'touchstart',
+                        'touchend'
+                    ]);
+                    done();
                 });
-            });
-
-            waitsFor(function() {
-                return ran;
-            });
-
-            runs(function() {
-                expect(getDispatchedEventTypes()).toEqual([
-                    'touchstart',
-                    'touchend'
-                ]);
-
-            });
         });
 
-        it('should dispatch touchend when release() is invoked', function() {
-            var ran = false;
-
-            runs(function() {
-                paw.isTouchSupported = true;
-                paw.release().then(function() {
-                    ran = true;
+        it('should dispatch touchend when release() is invoked', function(done) {
+            paw.isTouchSupported = true;
+            paw
+                .release()
+                .then(function() {
+                    expect(getDispatchedEventTypes()).toEqual([
+                        'touchend'
+                    ]);
+                    done();
                 });
-            });
-
-            waitsFor(function() {
-                return ran;
-            });
-
-            runs(function() {
-                expect(getDispatchedEventTypes()).toEqual([
-                    'touchend'
-                ]);
-
-            });
         });
 
-        it('should dispatch touchstart, touchmove when touch() then move() is invoked', function() {
-            var ran = false;
-
-            runs(function() {
-                paw.isTouchSupported = true;
-                paw
-                    .touch({
-                        x: 1,
-                        y: 2
-                    })
-                    .move({
-                        x: 3,
-                        y: 4
-                    }).then(function() {
-                        ran = true;
-                    });
-            });
-
-            waitsFor(function() {
-                return ran;
-            });
-
-            runs(function() {
-                expect(getDispatchedEventTypes()).toEqual([
-                    'touchstart',
-                    'touchmove'
-                ]);
-
-            });
-        });
-
-        it('should dispatch touchstart, touchmove, touchend when swipeUp() is invoked and touch is supported', function() {
-            var ran = false;
-
-            runs(function() {
-                paw.isTouchSupported = true;
-                paw.swipeUp().then(function() {
-                    ran = true;
+        it('should dispatch touchstart, touchmove when touch() then move() is invoked', function(done) {
+            paw.isTouchSupported = true;
+            paw
+                .touch({
+                    x: 1,
+                    y: 2
+                })
+                .move({
+                    x: 3,
+                    y: 4
+                }).then(function() {
+                    expect(getDispatchedEventTypes()).toEqual([
+                        'touchstart',
+                        'touchmove'
+                    ]);
+                    done();
                 });
-            });
-
-            waitsFor(function() {
-                return ran;
-            });
-
-            runs(function() {
-                var eventTypes = getDispatchedEventTypes();
-
-                expect(eventTypes.length).toBeGreaterThan(3);
-                expect(eventTypes[0]).toBe('touchstart');
-                expect(eventTypes[1]).toBe('touchmove');
-                for (var i = 2; i < eventTypes.length - 1; i++) {
-                    expect(eventTypes[i]).toBe('touchmove');
-                }
-                expect(eventTypes[eventTypes.length - 1]).toBe('touchend');
-
-                var startY = dispatchedEvents[0].touches[0].clientY;
-                // touchend has no touches, so get the second to last event which is a touchmove
-                var endY = dispatchedEvents[dispatchedEvents.length - 2].touches[0].clientY;
-                expect(startY).toBeGreaterThan(endY);
-
-            });
         });
 
-        it('should dispatch touchstart, touchmove, touchend when gesture() is invoked and touch is supported', function() {
-            var ran = false;
+        it('should dispatch touchstart, touchmove, touchend when swipeUp() is invoked and touch is supported', function(done) {
+            paw.isTouchSupported = true;
+            paw
+                .swipeUp()
+                .then(function() {
+                    var eventTypes = getDispatchedEventTypes();
 
-            runs(function() {
-                paw.isTouchSupported = true;
-                paw.gesture('80% 80%', '10% 10%', 200).then(function() {
-                    ran = true;
+                    expect(eventTypes.length).toBeGreaterThan(3);
+                    expect(eventTypes[0]).toBe('touchstart');
+                    expect(eventTypes[1]).toBe('touchmove');
+                    for (var i = 2; i < eventTypes.length - 1; i++) {
+                        expect(eventTypes[i]).toBe('touchmove');
+                    }
+                    expect(eventTypes[eventTypes.length - 1]).toBe('touchend');
+
+                    var startY = dispatchedEvents[0].touches[0].clientY;
+                    // touchend has no touches, so get the second to last event which is a touchmove
+                    var endY = dispatchedEvents[dispatchedEvents.length - 2].touches[0].clientY;
+                    expect(startY).toBeGreaterThan(endY);
+                    done();
                 });
-            });
-
-            waitsFor(function() {
-                return ran;
-            });
-
-            runs(function() {
-                var eventTypes = getDispatchedEventTypes();
-
-                expect(eventTypes.length).toBeGreaterThan(3);
-                expect(eventTypes[0]).toBe('touchstart');
-                expect(eventTypes[1]).toBe('touchmove');
-                for (var i = 2; i < eventTypes.length - 1; i++) {
-                    expect(eventTypes[i]).toBe('touchmove');
-                }
-                expect(eventTypes[eventTypes.length - 1]).toBe('touchend');
-
-                var startY = dispatchedEvents[0].touches[0].clientY;
-                // touchend has no touches, so get the second to last event which is a touchmove
-                var endY = dispatchedEvents[dispatchedEvents.length - 2].touches[0].clientY;
-                expect(startY).toBeGreaterThan(endY);
-
-            });
         });
 
-        it('should dispatch touchstart, touchmove, touchend when swipeDown() is invoked and touch is supported', function() {
-            var ran = false;
-            runs(function() {
-                paw.isTouchSupported = true;
-                paw.swipeDown().then(function(done) {
-                    ran = true;
-                    done(); //just to cover the condional in then()
+        it('should dispatch touchstart, touchmove, touchend when gesture() is invoked and touch is supported', function(done) {
+            paw.isTouchSupported = true;
+            paw
+                .gesture('80% 80%', '10% 10%', 200)
+                .then(function() {
+                    var eventTypes = getDispatchedEventTypes();
+
+                    expect(eventTypes.length).toBeGreaterThan(3);
+                    expect(eventTypes[0]).toBe('touchstart');
+                    expect(eventTypes[1]).toBe('touchmove');
+                    for (var i = 2; i < eventTypes.length - 1; i++) {
+                        expect(eventTypes[i]).toBe('touchmove');
+                    }
+                    expect(eventTypes[eventTypes.length - 1]).toBe('touchend');
+
+                    var startY = dispatchedEvents[0].touches[0].clientY;
+                    // touchend has no touches, so get the second to last event which is a touchmove
+                    var endY = dispatchedEvents[dispatchedEvents.length - 2].touches[0].clientY;
+                    expect(startY).toBeGreaterThan(endY);
+                    done();
                 });
-            });
-
-            waitsFor(function() {
-                return ran;
-            });
-
-            runs(function() {
-                var eventTypes = getDispatchedEventTypes();
-
-                expect(eventTypes.length).toBeGreaterThan(3);
-                if (eventTypes.length < 3) {
-                    return;
-                }
-
-                expect(eventTypes[0]).toBe('touchstart');
-                expect(eventTypes[1]).toBe('touchmove');
-                for (var i = 2; i < eventTypes.length - 1; i++) {
-                    expect(eventTypes[i]).toBe('touchmove');
-                }
-                expect(eventTypes[eventTypes.length - 1]).toBe('touchend');
-
-                var startY = dispatchedEvents[0].touches[0].clientY;
-                // touchend has no touches, so get the second to last event which is a touchmove
-                var endY = dispatchedEvents[dispatchedEvents.length - 2].touches[0].clientY;
-                expect(endY).toBeGreaterThan(startY);
-
-            });
         });
 
-        it('should double-click when doubleTap() is invoked and touch is not supported', function() {
-            var ran = false;
-            runs(function() {
-                paw.isTouchSupported = false;
-                paw.doubleTap('center center').then(function() {
-                    ran = true;
+        it('should dispatch touchstart, touchmove, touchend when swipeDown() is invoked and touch is supported', function(done) {
+            paw.isTouchSupported = true;
+            paw
+                .swipeDown()
+                .then(function() {
+                    var eventTypes = getDispatchedEventTypes();
+
+                    expect(eventTypes.length).toBeGreaterThan(3);
+                    if (eventTypes.length < 3) {
+                        return;
+                    }
+
+                    expect(eventTypes[0]).toBe('touchstart');
+                    expect(eventTypes[1]).toBe('touchmove');
+                    for (var i = 2; i < eventTypes.length - 1; i++) {
+                        expect(eventTypes[i]).toBe('touchmove');
+                    }
+                    expect(eventTypes[eventTypes.length - 1]).toBe('touchend');
+
+                    var startY = dispatchedEvents[0].touches[0].clientY;
+                    // touchend has no touches, so get the second to last event which is a touchmove
+                    var endY = dispatchedEvents[dispatchedEvents.length - 2].touches[0].clientY;
+                    expect(endY).toBeGreaterThan(startY);
+                    done();
                 });
-            });
-            waitsFor(function() {
-                return ran;
-            });
-            runs(function() {
-                expect(getDispatchedEventTypes()).toEqual([
-                    'mousedown',
-                    'mouseup',
-                    'click',
-                    'mousedown',
-                    'mouseup',
-                    'click'
-                ]);
-            });
         });
 
-        it('should doubleTap with specified delay between taps', function() {
-            var ran = false;
+        it('should double-click when doubleTap() is invoked and touch is not supported', function(done) {
+            paw.isTouchSupported = false;
+            paw
+                .doubleTap('center center')
+                .then(function() {
+                    expect(getDispatchedEventTypes()).toEqual([
+                        'mousedown',
+                        'mouseup',
+                        'click',
+                        'mousedown',
+                        'mouseup',
+                        'click'
+                    ]);
+                    done();
+                });
+        });
+
+        it('should doubleTap with specified delay between taps', function(done) {
             var EXPECTED_DELAY = 200;
-            runs(function() {
-                paw.isTouchSupported = false;
-                paw.doubleTap('center center', EXPECTED_DELAY).then(function() {
-                    ran = true;
-                });
-            });
-            waitsFor(function() {
-                return ran;
-            }, 'should not take too long to doubleTap', EXPECTED_DELAY * 2);
-            runs(function() {
-                expect(getDispatchedEventTypes()).toEqual([
-                    'mousedown',
-                    'mouseup',
-                    'click',
-                    'mousedown',
-                    'mouseup',
-                    'click'
-                ]);
+            paw.isTouchSupported = false;
+            paw
+                .doubleTap('center center', EXPECTED_DELAY)
+                .then(function() {
+                    expect(getDispatchedEventTypes()).toEqual([
+                        'mousedown',
+                        'mouseup',
+                        'click',
+                        'mousedown',
+                        'mouseup',
+                        'click'
+                    ]);
 
-                var actualDelay = dispatchedEvents[3].timeStamp - dispatchedEvents[2].timeStamp;
-                expect(actualDelay).toBeGreaterThan(EXPECTED_DELAY - 1);
-            });
+                    var actualDelay = dispatchedEvents[3].timeStamp - dispatchedEvents[2].timeStamp;
+                    expect(actualDelay).toBeGreaterThan(EXPECTED_DELAY - 1);
+                    done();
+                });
         });
 
-        it('should hold', function() {
-            var ran = false;
-            runs(function() {
-                paw.hold('center center').then(function() {
-                    ran = true;
+        it('should hold', function(done) {
+            paw
+                .hold('center center')
+                .then(function() {
+                    expect(getDispatchedEventTypes()).toEqual([
+                        'touchstart',
+                        'touchend'
+                    ]);
+                    done();
                 });
-            });
-            waitsFor(function() {
-                return ran;
-            });
-            runs(function() {
-                expect(getDispatchedEventTypes()).toEqual([
-                    'touchstart',
-                    'touchend'
-                ]);
-            });
         });
 
-        it('should hold with specified delay', function() {
-            var ran = false;
+        it('should hold with specified delay', function(done) {
             var EXPECTED_DELAY = 200;
-            runs(function() {
-                paw.hold('center center', EXPECTED_DELAY).then(function() {
-                    ran = true;
-                });
-            });
-            waitsFor(function() {
-                return ran;
-            }, 'should not take too long to hold', EXPECTED_DELAY * 2);
-            runs(function() {
-                var eventTypes = getDispatchedEventTypes();
-                expect(eventTypes).toEqual([
-                    'touchstart',
-                    'touchend'
-                ]);
-                if (eventTypes.length < 2) {
-                    return;
-                }
+            paw
+                .hold('center center', EXPECTED_DELAY)
+                .then(function() {
+                    var eventTypes = getDispatchedEventTypes();
+                    expect(eventTypes).toEqual([
+                        'touchstart',
+                        'touchend'
+                    ]);
+                    if (eventTypes.length < 2) {
+                        return;
+                    }
 
-                var actualDelay = dispatchedEvents[1].timeStamp - dispatchedEvents[0].timeStamp;
-                expect(actualDelay).toBeGreaterThan(EXPECTED_DELAY - 1);
-            });
+                    var actualDelay = dispatchedEvents[1].timeStamp - dispatchedEvents[0].timeStamp;
+                    expect(actualDelay).toBeGreaterThan(EXPECTED_DELAY - 1);
+                    done();
+                });
         });
 
-        it('should have a greater distance between touches after pinchOut()', function() {
-            var ran = false;
-            runs(function() {
-                paw.isTouchSupported = false;
-                paw.pinchOut().then(function() {
-                    ran = true;
+        it('should have a greater distance between touches after pinchOut()', function(done) {
+            paw.isTouchSupported = false;
+            paw
+                .pinchOut()
+                .then(function() {
+                    var eventTypes = getDispatchedEventTypes();
+
+                    expect(eventTypes[0]).toBe('touchstart');
+                    expect(eventTypes[1]).toBe('touchmove');
+                    for (var i = 2; i < eventTypes.length - 1; i++) {
+                        expect(eventTypes[i]).toBe('touchmove');
+                    }
+                    expect(eventTypes[eventTypes.length - 1]).toBe('touchend');
+
+                    var firstDistance = distanceBetweenTouches(dispatchedEvents[0]);
+                    var lastEventWithTouches = dispatchedEvents[dispatchedEvents.length - 2];
+                    var lastDistance = distanceBetweenTouches(lastEventWithTouches);
+                    expect(lastDistance).toBeGreaterThan(firstDistance);
+                    done();
                 });
-            });
-            waitsFor(function() {
-                return ran;
-            });
-            runs(function() {
-                var eventTypes = getDispatchedEventTypes();
-
-                expect(eventTypes[0]).toBe('touchstart');
-                expect(eventTypes[1]).toBe('touchmove');
-                for (var i = 2; i < eventTypes.length - 1; i++) {
-                    expect(eventTypes[i]).toBe('touchmove');
-                }
-                expect(eventTypes[eventTypes.length - 1]).toBe('touchend');
-
-                var firstDistance = distanceBetweenTouches(dispatchedEvents[0]);
-                var lastEventWithTouches = dispatchedEvents[dispatchedEvents.length - 2];
-                var lastDistance = distanceBetweenTouches(lastEventWithTouches);
-                expect(lastDistance).toBeGreaterThan(firstDistance);
-            });
         });
 
-        it('should have a smaller distance between touches after pinchIn()', function() {
-            var ran = false;
-            runs(function() {
-                paw.isTouchSupported = false;
-                paw.pinchIn().then(function() {
-                    ran = true;
+        it('should have a smaller distance between touches after pinchIn()', function(done) {
+            paw.isTouchSupported = false;
+            paw
+                .pinchIn()
+                .then(function() {
+                    var eventTypes = getDispatchedEventTypes();
+
+                    expect(eventTypes[0]).toBe('touchstart');
+                    expect(eventTypes[1]).toBe('touchmove');
+                    for (var i = 2; i < eventTypes.length - 1; i++) {
+                        expect(eventTypes[i]).toBe('touchmove');
+                    }
+                    expect(eventTypes[eventTypes.length - 1]).toBe('touchend');
+
+                    var firstDistance = distanceBetweenTouches(dispatchedEvents[0]);
+                    var lastEventWithTouches = dispatchedEvents[dispatchedEvents.length - 2];
+                    var lastDistance = distanceBetweenTouches(lastEventWithTouches);
+                    expect(firstDistance).toBeGreaterThan(lastDistance);
+                    done();
                 });
-            });
-            waitsFor(function() {
-                return ran;
-            });
-            runs(function() {
-                var eventTypes = getDispatchedEventTypes();
-
-                expect(eventTypes[0]).toBe('touchstart');
-                expect(eventTypes[1]).toBe('touchmove');
-                for (var i = 2; i < eventTypes.length - 1; i++) {
-                    expect(eventTypes[i]).toBe('touchmove');
-                }
-                expect(eventTypes[eventTypes.length - 1]).toBe('touchend');
-
-                var firstDistance = distanceBetweenTouches(dispatchedEvents[0]);
-                var lastEventWithTouches = dispatchedEvents[dispatchedEvents.length - 2];
-                var lastDistance = distanceBetweenTouches(lastEventWithTouches);
-                expect(firstDistance).toBeGreaterThan(lastDistance);
-            });
         });
 
         it('should buildTouches with a DOM element', function() {
@@ -856,49 +703,38 @@ define(function(require) {
             expect(paw.touchIndicators.length).toBe(0);
         });
 
-        it('should not throw when clearing nonexistent touch indicators', function() {
-            var ran = false;
-            runs(function() {
-                paw.showTouches = true;
-                paw.touch().then(function() {
-                    ran = true;
-                });
-            });
-            waitsFor(function() {
-                return ran;
-            });
-            runs(function() {
-                expect(paw.touchIndicators[0]).toBeDefined();
-                var oldTi = paw.touchIndicators[0];
-                paw.touchIndicators[0] = null;
-                expect(function() {
+        it('should not throw when clearing nonexistent touch indicators', function(done) {
+            paw.showTouches = true;
+            paw
+                .touch()
+                .then(function() {
+                    expect(paw.touchIndicators[0]).toBeDefined();
+                    var oldTi = paw.touchIndicators[0];
+                    paw.touchIndicators[0] = null;
+                    expect(function() {
+                        paw.clearTouchIndicators();
+                    }).not.toThrow();
+                    paw.touchIndicators[0] = oldTi;
                     paw.clearTouchIndicators();
-                }).not.toThrow();
-                paw.touchIndicators[0] = oldTi;
-                paw.clearTouchIndicators();
-            });
+                    done();
+                });
         });
 
-        it('should clear touch indicators after a timeout if set', function() {
-            var ran = false;
-            spyOn(paw, 'clearTouchIndicators').andCallThrough();
-            runs(function() {
-                paw.showTouches = true;
-                paw.clearTouchIndicatorsAfter = 500;
-                paw.touch().wait(600).then(function() {
-                    ran = true;
+        it('should clear touch indicators after a timeout if set', function(done) {
+            spyOn(paw, 'clearTouchIndicators').and.callThrough();
+            paw.showTouches = true;
+            paw.clearTouchIndicatorsAfter = 500;
+            paw
+                .touch()
+                .wait(600)
+                .then(function() {
+                    expect(paw.clearTouchIndicators).toHaveBeenCalled();
+                    expect(paw.touchIndicators[0]).toBeDefined();
+                    expect(paw.touchIndicators[0].style.opacity).toEqual('0');
+                    done();
                 });
-                expect(paw.touchIndicators[0]).toBeDefined();
-                expect(paw.touchIndicators[0].style.opacity).toBeGreaterThan(0);
-            });
-            waitsFor(function() {
-                return ran;
-            });
-            runs(function() {
-                expect(paw.clearTouchIndicators).toHaveBeenCalled();
-                expect(paw.touchIndicators[0]).toBeDefined();
-                expect(paw.touchIndicators[0].style.opacity).toEqual('0');
-            });
+            expect(paw.touchIndicators[0]).toBeDefined();
+            expect(paw.touchIndicators[0].style.opacity).toBeGreaterThan(0);
         });
 
         it('should polyfill creation of touchLists', function() {
@@ -913,45 +749,34 @@ define(function(require) {
             document.createTouchList = tl;
         });
 
-        it('should call indicate Touches a minimal amount of times', function() {
+        it('should call indicate Touches a minimal amount of times', function(done) {
             spyOn(paw, 'indicateTouches');
-            var ran = false;
-            runs(function() {
-                paw.tap().then(function() {
-                    ran = true;
+            paw
+                .tap()
+                .then(function() {
+                    expect(paw.indicateTouches.calls.count()).toBe(2);
+                    done();
                 });
-            });
-            waitsFor(function() {
-                return ran;
-            });
-            runs(function() {
-                expect(paw.indicateTouches.calls.length).toBe(2);
-            });
         });
 
-        it('should dispatch a wheel event', function() {
+        it('should dispatch a wheel event', function(done) {
             // WheelEventSimulator uses 'DOMMouseScroll' for phantom
             // But PhantomJS does not dispatch it
             if (window.phantom) {
                 return;
             }
 
-            var ran = false;
-            runs(function() {
-                document.onmousewheel = function() {};
-                paw.wheel('center center', { deltaY: 100 }).wait(200).then(function() {
-                    ran = true;
+            document.onmousewheel = function() {};
+            paw
+                .wheel('center center', { deltaY: 100 })
+                .wait(200)
+                .then(function() {
+                    var eventTypes = getDispatchedEventTypes();
+                    expect(eventTypes).toEqual([
+                        'wheel'
+                    ]);
+                    done();
                 });
-            });
-            waitsFor(function() {
-                return ran;
-            });
-            runs(function() {
-                var eventTypes = getDispatchedEventTypes();
-                expect(eventTypes).toEqual([
-                    'wheel'
-                ]);
-            });
         });
 
     });

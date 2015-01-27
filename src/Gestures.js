@@ -15,7 +15,6 @@
  */
 
 /* global module */
-'use strict';
 
 var WheelEventSimulator = require('./WheelEventSimulator');
 /**

@@ -15,9 +15,8 @@
  */
 
 /* global module */
-'use strict';
 
-var Q = require('Q');
+var Q = require('q');
 var Train = {};
 
 // borrowed from angular injector that looks at parameter names
