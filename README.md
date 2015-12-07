@@ -4,7 +4,7 @@
 
 > Paw simulates touches and touch gestures including taps, holds, swipes,
 > pinches, and custom gestures. It comes with a touch recorder that can record
-> your interactions and emit javscript code that you can load right into Paw
+> your interactions and emit javascript code that you can load right into Paw
 > to play your custom recorded gestures.
 >
 > This is great for automated testing of these interactions in a repeatable
