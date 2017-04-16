@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+ (function () {
 
-define(function(require) {
     'use strict';
 
-    var WheelEventSimulator = require('paw/WheelEventSimulator');
+    var WheelEventSimulator = require('../src/WheelEventSimulator');
 
     describe('WheelEventSimulator#detectMouseWheelEvent', function() {
         it('should return "wheel" for IE9+', function() {
@@ -67,7 +67,7 @@ define(function(require) {
             spyOn(target, 'dispatchEvent');
             simulator.dispatch(target, options);
             expect(target.dispatchEvent).toHaveBeenCalled();
-            return target.dispatchEvent.mostRecentCall.args[0];
+            return target.dispatchEvent.calls.mostRecent().args[0];
         }
         describe('dispatching in browsers supporting "wheel" event', function() {
             beforeEach(function() {
@@ -133,7 +133,7 @@ define(function(require) {
                 var invocation = function() {
                     simulator.dispatch(target);
                 };
-                expect(invocation).toThrow('Your browser is not supported by WheelEventSimulator.');
+                expect(invocation).toThrow(new Error('Your browser is not supported by WheelEventSimulator.'));
             });
             it('should not dispatch an event', function() {
                 try {
@@ -174,4 +174,4 @@ define(function(require) {
             });
         });
     });
-});
+}());

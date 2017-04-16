@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+ (function () {
 
-define(function(require) {
     'use strict';
 
-    var ViewportRelative = require('paw/ViewportRelative');
+    var ViewportRelative = require('../src/ViewportRelative');
     var viewport = {
         width: 1024,
         height: 768
@@ -293,4 +293,5 @@ define(function(require) {
             expect(result.y).toBe('center');
         });
     });
-});
+
+}());

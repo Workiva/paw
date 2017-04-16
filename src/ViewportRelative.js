@@ -15,221 +15,206 @@
  */
 
 /* global module */
-(function(root, factory) {
-    if (typeof exports === 'object') {
-        module.exports = factory();
+
+var supportedWords = {
+    'x': {
+        'left': 0,
+        'right': 1,
+        'center': 0.5
+    },
+    'y': {
+        'top': 0,
+        'bottom': 1,
+        'center': 0.5
     }
-    else if (typeof define === 'function' && define.amd) {
-        define('paw/ViewportRelative', [], factory);
+};
+
+function normalizePoint(point) {
+    if (!point) {
+        point = {
+            x: 'center',
+            y: 'center'
+        };
     }
-    else {
-        root.ViewportRelative = factory();
+    if (typeof(point) === 'string') {
+        var pointSplit = point.trim().split(/\s+/g);
+        point = {
+            x: (pointSplit[0]).toLowerCase(),
+            y: (pointSplit[1] || '').toLowerCase()
+        };
+        point.y = point.y || 'center';
     }
-}(this, function() {
+    return point;
+}
 
-    'use strict';
+function isOrderReversed(point) {
+    var xVal = supportedWords.x[point.x];
+    var yVal = supportedWords.y[point.y];
+    var yRevVal = supportedWords.y[point.x];
+    var xRevVal = supportedWords.x[point.y];
 
-    var supportedWords = {
-        'x': {
-            'left': 0,
-            'right': 1,
-            'center': 0.5
-        },
-        'y': {
-            'top': 0,
-            'bottom': 1,
-            'center': 0.5
-        }
-    };
+    // see if the word gives away the position
+    // these will be true if definitely the right word
+    // false if not, and null if maybe aka could be either (ie center)
 
-    function normalizePoint(point) {
-        if (!point) {
-            point = {
-                x: 'center',
-                y: 'center'
-            };
-        }
-        if (typeof(point) === 'string') {
-            var pointSplit = point.trim().split(/\s+/g);
-            point = {
-                x: (pointSplit[0]).toLowerCase(),
-                y: (pointSplit[1] || '').toLowerCase()
-            };
-            point.y = point.y || 'center';
-        }
-        return point;
+    var xIsX = xVal    === 1 || xVal    === 0; // left or right are first
+    var yIsY = yVal    === 1 || yVal    === 0; // top or bottom are second
+    var xIsY = yRevVal === 1 || yRevVal === 0; // top or bottom are first
+    var yIsX = xRevVal === 1 || xRevVal === 0; // left or right are second
+
+    // update with 'center' being indeterminate
+    if (xVal === 0.5) {
+        xIsX = null;
     }
-
-    function isOrderReversed(point) {
-        var xVal = supportedWords.x[point.x];
-        var yVal = supportedWords.y[point.y];
-        var yRevVal = supportedWords.y[point.x];
-        var xRevVal = supportedWords.x[point.y];
-
-        // see if the word gives away the position
-        // these will be true if definitely the right word
-        // false if not, and null if maybe aka could be either (ie center)
-
-        var xIsX = xVal    === 1 || xVal    === 0; // left or right are first
-        var yIsY = yVal    === 1 || yVal    === 0; // top or bottom are second
-        var xIsY = yRevVal === 1 || yRevVal === 0; // top or bottom are first
-        var yIsX = xRevVal === 1 || xRevVal === 0; // left or right are second
-
-        // update with 'center' being indeterminate
-        if (xVal === 0.5) {
-            xIsX = null;
-        }
-        if (yVal === 0.5) {
-            yIsY = null;
-        }
-        if (xRevVal === 0.5) {
-            yIsX = null;
-        }
-        if (yRevVal === 0.5) {
-            xIsY = null;
-        }
-
-        // we return true if we can for sure say that the arguments
-        // are reversed, otherwise assume they are in x,y order
-        if (xIsY === true && !yIsY) {
-            return true;
-        }
-        if (yIsX === true && !xIsY) {
-            return true;
-        }
-        return false;
+    if (yVal === 0.5) {
+        yIsY = null;
+    }
+    if (xRevVal === 0.5) {
+        yIsX = null;
+    }
+    if (yRevVal === 0.5) {
+        xIsY = null;
     }
 
-    function valueToPixels(maybeRelativeValue, axis, viewportDimensions) {
-        var type = typeof(maybeRelativeValue);
-        var max;
-        var percent;
-        var result;
-        var wordMultiplier;
+    // we return true if we can for sure say that the arguments
+    // are reversed, otherwise assume they are in x,y order
+    if (xIsY === true && !yIsY) {
+        return true;
+    }
+    if (yIsX === true && !xIsY) {
+        return true;
+    }
+    return false;
+}
 
-        if (type === 'number') {
-            return maybeRelativeValue;
-        }
+function valueToPixels(maybeRelativeValue, axis, viewportDimensions) {
+    var type = typeof(maybeRelativeValue);
+    var max;
+    var percent;
+    var result;
+    var wordMultiplier;
 
-        var num = Number(maybeRelativeValue);
-        if (!isNaN(num)) {
-            return num;
-        }
+    if (type === 'number') {
+        return maybeRelativeValue;
+    }
 
-        // check our inputs
-        if (!viewportDimensions || typeof viewportDimensions !== 'object') {
-            // throw 'Viewport Dimensions are required';
-            return undefined;
-        }
-        if (!(viewportDimensions.width >= 0 && viewportDimensions.height >= 0)) {
-            //throw 'Viewport width and height must be >= 0';
-            return undefined;
-        }
-        if (!(axis === 'x' || axis === 'y')) {
-            //throw 'Axis must be either x or y';
-            return undefined;
-        }
-        if (type === 'string') {
-            // trim and lowercase the input
-            maybeRelativeValue = maybeRelativeValue.trim().toLowerCase();
-            max = axis === 'x' ? viewportDimensions.width : viewportDimensions.height;
+    var num = Number(maybeRelativeValue);
+    if (!isNaN(num)) {
+        return num;
+    }
 
-            // if it is a percentage
-            if (maybeRelativeValue.indexOf('%') === maybeRelativeValue.length - 1) {
-                maybeRelativeValue = maybeRelativeValue.replace('%', '');
-                percent = Number(maybeRelativeValue) / 100.0;
-                if (isNaN(percent)) {
-                    //throw 'Relative value not in expected ##% format';
-                    return undefined;
-                }
+    // check our inputs
+    if (!viewportDimensions || typeof viewportDimensions !== 'object') {
+        // throw 'Viewport Dimensions are required';
+        return undefined;
+    }
+    if (!(viewportDimensions.width >= 0 && viewportDimensions.height >= 0)) {
+        //throw 'Viewport width and height must be >= 0';
+        return undefined;
+    }
+    if (!(axis === 'x' || axis === 'y')) {
+        //throw 'Axis must be either x or y';
+        return undefined;
+    }
+    if (type === 'string') {
+        // trim and lowercase the input
+        maybeRelativeValue = maybeRelativeValue.trim().toLowerCase();
+        max = axis === 'x' ? viewportDimensions.width : viewportDimensions.height;
 
-                result = Math.round(max * percent * 1000) / 1000;
-            } else if (maybeRelativeValue.indexOf('px') === maybeRelativeValue.length - 2) {
-                maybeRelativeValue = maybeRelativeValue.replace('px', '');
-                result = Number(maybeRelativeValue);
-                if (isNaN(result)) {
-                    return undefined;
-                }
+        // if it is a percentage
+        if (maybeRelativeValue.indexOf('%') === maybeRelativeValue.length - 1) {
+            maybeRelativeValue = maybeRelativeValue.replace('%', '');
+            percent = Number(maybeRelativeValue) / 100.0;
+            if (isNaN(percent)) {
+                //throw 'Relative value not in expected ##% format';
+                return undefined;
+            }
+
+            result = Math.round(max * percent * 1000) / 1000;
+        } else if (maybeRelativeValue.indexOf('px') === maybeRelativeValue.length - 2) {
+            maybeRelativeValue = maybeRelativeValue.replace('px', '');
+            result = Number(maybeRelativeValue);
+            if (isNaN(result)) {
+                return undefined;
+            }
+        } else {
+            wordMultiplier = supportedWords[axis][maybeRelativeValue];
+            // if it is a supported word
+            if (wordMultiplier !== undefined) {
+                result = wordMultiplier * max;
             } else {
-                wordMultiplier = supportedWords[axis][maybeRelativeValue];
-                // if it is a supported word
-                if (wordMultiplier !== undefined) {
-                    result = wordMultiplier * max;
-                } else {
-                    maybeRelativeValue = Number(maybeRelativeValue);
-                    if (!isNaN(maybeRelativeValue)) {
-                        result = maybeRelativeValue;
-                    }
+                maybeRelativeValue = Number(maybeRelativeValue);
+                if (!isNaN(maybeRelativeValue)) {
+                    result = maybeRelativeValue;
                 }
             }
         }
-
-        return result;
     }
 
-    /*
-     * @param {object} point the point to convert
-     * @return a point that has x,y properties as pixels
-     */
-    function pointToPixels(point, viewportDimensions) {
-        point = normalizePoint(point);
+    return result;
+}
 
-        var xAxis = 'x';
-        var yAxis = 'y';
-        var reversed = isOrderReversed(point);
-        if (reversed) {
-            xAxis = 'y';
-            yAxis = 'x';
-        }
-        var xVal = valueToPixels(point.x, xAxis, viewportDimensions);
-        var yVal = valueToPixels(point.y, yAxis, viewportDimensions);
+/*
+ * @param {object} point the point to convert
+ * @return a point that has x,y properties as pixels
+ */
+function pointToPixels(point, viewportDimensions) {
+    point = normalizePoint(point);
 
-        // if the order is reversed, swap variables
-        if (reversed) {
-            var temp = xVal;
-            xVal = yVal;
-            yVal = temp;
-        }
-        // set the x,y values
-        point.x = xVal;
-        point.y = yVal;
-
-        return point;
+    var xAxis = 'x';
+    var yAxis = 'y';
+    var reversed = isOrderReversed(point);
+    if (reversed) {
+        xAxis = 'y';
+        yAxis = 'x';
     }
+    var xVal = valueToPixels(point.x, xAxis, viewportDimensions);
+    var yVal = valueToPixels(point.y, yAxis, viewportDimensions);
 
-    function pointToPercent(point, viewportDimensions) {
-        point = normalizePoint(point);
-        point.x = (point.x / viewportDimensions.width * 100);
-        point.y = (point.y / viewportDimensions.height * 100);
-        point.x = (Math.round(point.x * 1000) / 1000) + '%';
-        point.y = (Math.round(point.y * 1000) / 1000) + '%';
-        return point;
+    // if the order is reversed, swap variables
+    if (reversed) {
+        var temp = xVal;
+        xVal = yVal;
+        yVal = temp;
     }
+    // set the x,y values
+    point.x = xVal;
+    point.y = yVal;
 
-    function pointToString(point) {
-        if (!point) {
-            return undefined;
-        }
-        if (point && point.x !== null && point.x !== undefined && point.y !== null && point.y !== undefined) {
-            if (typeof point.x === 'number') {
-                point.x = point.x + 'px';
-            }
-            if (typeof point.y === 'number') {
-                point.y = point.y + 'px';
-            }
-            return point.x + ' ' + point.y;
-        }
-        return point;
+    return point;
+}
+
+function pointToPercent(point, viewportDimensions) {
+    point = normalizePoint(point);
+    point.x = (point.x / viewportDimensions.width * 100);
+    point.y = (point.y / viewportDimensions.height * 100);
+    point.x = (Math.round(point.x * 1000) / 1000) + '%';
+    point.y = (Math.round(point.y * 1000) / 1000) + '%';
+    return point;
+}
+
+function pointToString(point) {
+    if (!point) {
+        return undefined;
     }
+    if (point && point.x !== null && point.x !== undefined && point.y !== null && point.y !== undefined) {
+        if (typeof point.x === 'number') {
+            point.x = point.x + 'px';
+        }
+        if (typeof point.y === 'number') {
+            point.y = point.y + 'px';
+        }
+        return point.x + ' ' + point.y;
+    }
+    return point;
+}
 
-    // export an object with the public functions on it
-    return {
-        normalizePoint: normalizePoint,
-        isOrderReversed: isOrderReversed,
-        valueToPixels: valueToPixels,
-        pointToPixels: pointToPixels,
-        pointToPercent: pointToPercent,
-        pointToString: pointToString
-    };
-
-}));
+// export an object with the public functions on it
+module.exports = {
+    normalizePoint: normalizePoint,
+    isOrderReversed: isOrderReversed,
+    valueToPixels: valueToPixels,
+    pointToPixels: pointToPixels,
+    pointToPercent: pointToPercent,
+    pointToString: pointToString
+};

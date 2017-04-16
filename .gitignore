@@ -2,6 +2,7 @@
 .idea/
 *.sublime-*
 
+jspm_packages
 bower_components/
 docs/api/
 node_modules/

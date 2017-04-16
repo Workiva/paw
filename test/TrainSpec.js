@@ -15,9 +15,11 @@
  */
 
 define(function(require) {
+
     'use strict';
 
-    var Train = require('paw/Train');
+    var Train = require('../src/Train');
+
     var mock = {
         mockSync: function() {
             // don't need to do anything in here
